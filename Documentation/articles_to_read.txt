@@ -1,0 +1,7 @@
+[1] https://sci-hub.se/10.1145/3298981 
+[2] https://arxiv.org/pdf/1902.01046.pdf 
+[3] https://sci-hub.se/10.1109/MSP.2020.2975749 
+[4] https://asmedigitalcollection.asme.org/mechanicaldesign/article-abstract/143/4/040802/1074256/Collaborative-Robotics-A-Survey?redirectedFrom=fulltext 
+
+https://people.engr.ncsu.edu/ericro/research/psm.htm
+https://medium.com/0xmachina/m1-apples-new-silicon-microarchitecture-on-a-chip-29b4dd45d7a7
