@@ -5,3 +5,11 @@
 
 https://people.engr.ncsu.edu/ericro/research/psm.htm
 https://medium.com/0xmachina/m1-apples-new-silicon-microarchitecture-on-a-chip-29b4dd45d7a7
+chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Ftigerprints.clemson.edu%2Fcgi%2Fviewcontent.cgi%3Farticle%3D1618%26context%3Dall_theses&clen=1298593 
+chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Fwww.osti.gov%2Fservlets%2Fpurl%2F1118155&clen=1498690&chunk=true 
+http://conf.uni-obuda.hu/sami2022/ 
+http://conf.uni-obuda.hu/saci2022/ 
+http://www.ines-conf.org/ines-conf/2022index.html 
+http://conf.uni-obuda.hu/sisy2022/ 
+https://www.mdpi.com/1996-1073/14/4/1074/htm 
+https://ieeexplore.ieee.org/abstract/document/8599198 

@@ -2,6 +2,8 @@
   - [Will we adopt AI like we adopted electricity?](#will-we-adopt-ai-like-we-adopted-electricity)
   - [A trusted federated system to share granular data among disparate database resources](#a-trusted-federated-system-to-share-granular-data-among-disparate-database-resources)
   - [Practical secure aggregation for privacy-preserving Machine Learning](#practical-secure-aggregation-for-privacy-preserving-machine-learning)
+  - [A generic framework for privacy preserving deep learning](#a-generic-framework-for-privacy-preserving-deep-learning)
+  - [Advances and Open Problems in Federated Learning](#advances-and-open-problems-in-federated-learning)
 - [Further Reading:](#further-reading)
 
 # Articles:  
@@ -25,6 +27,7 @@ Joanna F. DeFranco, David F. Ferraiolo, D. Richard Kuhn, Joshua D. Roberts
   
 _Notes_:  
 - n/a
+
 
  ## Practical secure aggregation for privacy-preserving Machine Learning  
 Keith Bonawitz, Vladimir Ivanov, Ben Kreuter, Antonio Marcedone, H. Brendan McMahan, Sarvar Patel, Daniel Ramage, Aaron Segal, Karn Seth  
@@ -53,6 +56,24 @@ _Key points_:
 - Simulation-based proof for MPC protocols
 - Random oracle model  
 
+**TODO**: Read later from the beginning 
+ 
+ ## A generic framework for privacy preserving deep learning
+ Theo Ryffel, Andrew Trask, Morten Dahl, Robby Wagner, Jason Mancuso, Daniel Rueckert, Jonathan Passerat-Palmbach
+ [1811.04017v2.pdf](./arxiv/1811.04017v2.pdf)  
+
+_Notes_: 
+ - Secure Multiparty Computation (SMPC) is becoming increasingly popular. Machine learning, SMPC --> Federated learning
+ - Securely trained models are still vulnerable to reverse-engineering attacks that can extract sensitive information --> Differentially Private (DP) methods address this and can efficiently protect the data
+
+
+ ## Advances and Open Problems in Federated Learning 
+ Peter Kairouz, Brendan Mcmahan, Brendan Avent, Aurélien Bellet, Mehdi Bennis, et al..
+
+_Notes_: 
+  - McMahan et al. were the first to coin the "Federated Learning" term in _Communication-Efficient Learning of Deep Networks from Decentralized Data_:
+> We term our approach _Federated Learning_, since the learning task is solved by a loose federation of participating device
+  - 
 ------------------  
 
 # Further Reading:
@@ -60,6 +81,9 @@ _Key points_:
 - Collaborative Deep Learning in Fixed Topology Networks, Zhanhong Jiang, Aditya Balu, Chinmay Hegde, Soumik Sarkar, 2017
 - Adi Shamir. 1979. How to share a secret. Commun. ACM 22, 11 (1979), 612–613.
 - Whitfield Diffie and Martin Hellman. 1976. New directions in cryptography. IEEE transactions on Information Theory 22, 6 (1976), 644–654.
+- McMahan papers
+- Martin Abadi, Andy Chu, Ian Goodfellow, H. Brendan McMahan, Ilya Mironov, Kunal Talwar, and Li Zhang. Deep learning with differential privacy.
+- Ivan Damgård, Valerio Pastro, Nigel Smart, and Sarah Zakarias. Multiparty computation from somewhat homomorphic encryption
 
 
 
@@ -70,5 +94,3 @@ _Key points_:
 
 
 
-
-TODO: Continue reading from "or security, in the honest but curious model..." at [3133956.3133982.pdf](./other/3133956.3133982.pdf)  
