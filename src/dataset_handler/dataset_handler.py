@@ -57,9 +57,14 @@ class DataGenerator(tf.keras.utils.Sequence):
                  max_frames: int,
                  batch_size: int,
                  feature_extractor: tf.keras.Model,
-                 shuffle_after_epoch: bool = True):
+                 shuffle_after_epoch: bool = True,
+                 partition: str = 'train'):
         self.paths = os.listdir(root_dir)
         self.paths = [os.path.join(root_dir, path) for path in self.paths]
+        if partition == 'train':
+            self.paths = self.paths[:int(len(self.paths) * 0.8)]
+        else:
+            self.paths = self.paths[int(len(self.paths) * 0.8):]
         self.path_idx = 0
         self.resize = resize
         self.max_frames = max_frames
