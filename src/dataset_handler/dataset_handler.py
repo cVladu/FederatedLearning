@@ -1,100 +1,84 @@
+import math
 import os
+import glob
 import pathlib
-from typing import Tuple
+from typing import Tuple, List, Callable
 
 import cv2
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 
-from src.model.model import build_feature_extractor
 
-
-def load_video(path, max_frames=None, resize=None):
-    npy_path = pathlib.Path(path).with_suffix('.npy')
-    if os.path.isfile(npy_path):
-        if resize is None:
-            raise ValueError('Resize must be specified when loading from npy')
-        frames = np.load(npy_path, allow_pickle=True)
-        return np.array([cv2.resize(frame, resize) for frame in frames])
-
-    cap = cv2.VideoCapture(path)
+def load_video(video_path: str) -> np.array:
+    """
+    Loads a video from a given path.
+    :param video_path: str. Path to the video.
+    :return: np.array. A numpy array of the video.
+    """
+    if isinstance(video_path, tf.Tensor):
+        video_path = str(video_path.numpy())
+    cap = cv2.VideoCapture(video_path)
+    frames = []
     try:
-        frames = []
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
-            if max_frames and len(frames) >= max_frames:
-                break
-            if resize is not None:
-                frame = cv2.resize(frame, resize)
+            frame = frame[:, :, [2, 1, 0]]
             frames.append(frame)
+
     finally:
         cap.release()
     return np.array(frames)
 
 
-def video_frame_generator(path, resize=None):
+def save_npy(source_dir: str, target_dir: str):
+    """
+    Saves all videos in a directory to a numpy array.
+    :param source_dir: str. Path to the directory containing the videos.
+    :param target_dir: str. Path to the directory to save the numpy arrays.
+    """
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    for video_path in tqdm(glob.glob(os.path.join(source_dir, "*.avi"))):
+        video = load_video(video_path)
+        np.save(os.path.join(target_dir, os.path.basename(video_path)), video)
 
-    cap = cv2.VideoCapture(path)
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            frame = cv2.resize(frame, resize)
-            yield frame
-    finally:
-        cap.release()
 
+class DatasetHandlerClass(tf.keras.utils.Sequence):
 
-class DataGenerator(tf.keras.utils.Sequence):
-
-    def __init__(self,
-                 root_dir: str,
-                 resize: Tuple,
-                 max_frames: int,
-                 batch_size: int,
-                 feature_extractor: tf.keras.Model,
-                 shuffle_after_epoch: bool = True,
-                 partition: str = 'train'):
-        self.paths = os.listdir(root_dir)
-        self.paths = [os.path.join(root_dir, path) for path in self.paths]
-        if partition == 'train':
-            self.paths = self.paths[:int(len(self.paths) * 0.8)]
-        else:
-            self.paths = self.paths[int(len(self.paths) * 0.8):]
-        self.path_idx = 0
-        self.resize = resize
-        self.max_frames = max_frames
-        self.current_video = None
-        self.current_video_idx = 0
+    def __init__(self, dataset_path: str, data_aug_ops: List[Callable] = None, batch_size=1):
+        self.video_label_list = glob.glob(os.path.join(dataset_path, "**", "*.npy"))
+        self.data_aug_ops = data_aug_ops
         self.batch_size = batch_size
-        self.idxes = None
-        self.shuffle_after_epoch = shuffle_after_epoch
-        self.feature_extractor = feature_extractor
         self.on_epoch_end()
 
+    def on_epoch_end(self):
+        np.random.shuffle(self.video_label_list)
+
     def __len__(self):
-        return len(self.current_video) - 1
+        return math.ceil(len(self.video_label_list) / self.batch_size)
 
-    def __getitem__(self, index):
-        x = np.empty(shape=(self.batch_size, self.max_frames, *self.resize, 3), dtype=np.float32)
-        y = np.empty(shape=(self.batch_size, *self.resize, 3), dtype=np.float32)
-        tmp_idxes = self.idxes[index * self.batch_size: (index + 1) * self.batch_size]
-        for batch_idx, idx in enumerate(tmp_idxes):
-            x[batch_idx, ...] = self.current_video[idx: idx + self.max_frames]
-            y[batch_idx, ...] = self.current_video[idx + self.max_frames]
-        return x, self.feature_extractor(y)
+    def __getitem__(self, idx: int):
+        video_paths = self.video_label_list[idx * self.batch_size: idx * self.batch_size + self.batch_size]
+        X = []
+        y = []
+        for path_ in video_paths:
+            video = np.load(path_)
+            if self.data_aug_ops:
+                for op in self.data_aug_ops:
+                    video = op(video)
+            X.append(video)
+            y.append(pathlib.Path(path_).parent.name == "Fight")
+        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
 
-    def on_epoch_end(self, shuffle=True):
-        path_to_video = self.paths[self.path_idx]
-        self.current_video = load_video(path_to_video, resize=self.resize)
-        self.current_video_idx += 1 if self.current_video_idx < len(self.paths) else 0
-        self.idxes = np.arange(len(self.current_video) - self.max_frames)
-        if self.shuffle_after_epoch:
-            np.random.shuffle(self.idxes)
-        if self.current_video_idx == len(self.paths):
-            if shuffle:
-                np.random.shuffle(self.path_to_videos)
+
+if __name__ == "__main__":
+    src_dir = "/home/cvladu/data/federated_learning/FederatedLearning/data/RWF-2000"
+    dst_dir = "/home/cvladu/data/federated_learning/FederatedLearning/data/RWF-2000_npy"
+    for f1 in ['train', 'val']:
+        for f2 in ['Fight', 'NonFight']:
+            src_path = os.path.join(src_dir, f1, f2)
+            dst_path = os.path.join(dst_dir, f1, f2)
+            save_npy(src_path, dst_path)
