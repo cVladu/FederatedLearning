@@ -58,8 +58,8 @@ class LearnableLevelsCallback(tf.keras.callbacks.Callback):
 
 def main():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-    dh_train = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy/train")
-    dh_val = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy/val")
+    dh_train = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy_preprocesed/train")
+    dh_val = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy_preprocesed/val")
     attention_seeking_cell = AttentionSeekingCell(
         crop_size=tf.convert_to_tensor(np.array([128, 128])),
         backbone_preprocessing_fn=keras.applications.efficientnet_v2.preprocess_input,
@@ -114,11 +114,10 @@ def main():
 def main_2():
     os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
     keras.backend.clear_session()
-    dh_train = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy/train",
-                                   data_aug_ops=[partial(resize_to_max, max_size=128),
-                                                 tf.keras.applications.mobilenet_v2.preprocess_input])
-    dh_val = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy/val",
-                                 data_aug_ops=[partial(resize_to_max, max_size=128)])
+    dh_train = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy_preprocesed/train",
+                                   data_aug_ops=None, batch_size=16)
+    dh_val = DatasetHandlerClass("/gdrive/MyDrive/Colab Notebooks/Ongoing Work/dataset/RWF-2000_npy_preprocesed/val",
+                                 data_aug_ops=None, batch_size=16)
     model = PyramidTransformer(150,
                                4,
                                1,
@@ -162,10 +161,8 @@ def main_2():
               callbacks=callbacks,
               validation_data=dh_val,
               validation_freq=2,
-              steps_per_epoch=1000,
-              validation_steps=1000,
-              workers=8,
-              max_queue_size=32)
+              workers=4,
+              max_queue_size=8)
 
 
 if __name__ == "__main__":
